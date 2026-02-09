@@ -1,45 +1,39 @@
 import classNames from 'classnames';
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { getSearchWith } from '../utils/searchHelper';
+
+// type Record = 'string' | 'string'[] | null | number;
 
 export const PeopleFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const centuries = searchParams.getAll('centuries') || [];
-  const sex = searchParams.get('sex');
+
+  function setSearchWith(param: any) {
+    const result = getSearchWith(searchParams, param);
+
+    setSearchParams(result);
+  }
 
   function handelQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const params = new URLSearchParams(searchParams);
+    const val = event.target.value.trimStart().trim();
+    const result = val === '' ? { query: null } : { query: val };
 
-    params.set('query', event.target.value);
-    setSearchParams(params);
+    setSearchWith(result);
   }
 
   function sexFiller(value: string) {
-    const params = new URLSearchParams(searchParams);
-    const sexi = ['f', 'm'];
+    const result = ['f', 'm'].includes(value) ? { sex: value } : { sex: null };
 
-    if (sexi.includes(value)) {
-      params.set('sex', value);
-    } else {
-      params.delete('sex');
-    }
-
-    setSearchParams(params);
+    setSearchWith(result);
   }
 
   function toogCenturies(ch: string) {
-    const params = new URLSearchParams(searchParams);
-
     const newCenturies = centuries.includes(ch)
       ? centuries.filter(century => century !== ch)
       : [...centuries, ch];
 
-    params.delete('centuries');
-    newCenturies.forEach(century => {
-      params.append('centuries', century);
-    });
-
-    setSearchParams(params);
+    setSearchWith({ centuries: newCenturies });
   }
 
   // function deleteCenturies() {
@@ -56,15 +50,10 @@ export const PeopleFilters = () => {
       <p className="panel-tabs" data-cy="SexFilter">
         {['All', 'Male', 'Female'].map(option => {
           const short = option === 'All' ? '' : option[0].toLowerCase();
-          const href = short ? `#/people/sex=${short}` : '#/people';
+          // const href = short ? `#/people/sex=${short}` : '#/people';
 
           return (
-            <a
-              key={option}
-              className=""
-              // href={href}
-              onClick={() => sexFiller(short)}
-            >
+            <a key={option} className="" onClick={() => sexFiller(short)}>
               {option}
             </a>
           );

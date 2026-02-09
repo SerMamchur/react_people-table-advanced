@@ -4,15 +4,15 @@ import { PersonLink } from './PersonLink';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 type Props = {
-  peopleList: Person[];
+  visiblePeoples: Person[];
 };
 
-export const PeopleTable: React.FC<Props> = ({ peopleList }) => {
+export const PeopleTable: React.FC<Props> = ({ visiblePeoples }) => {
   const { slug } = useParams();
 
   return (
     <>
-      {peopleList.length > 0 && (
+      {visiblePeoples.length > 0 && (
         <table
           data-cy="peopleTable"
           className="table is-striped is-hoverable is-narrow is-fullwidth"
@@ -69,9 +69,13 @@ export const PeopleTable: React.FC<Props> = ({ peopleList }) => {
           </thead>
 
           <tbody>
-            {peopleList.map(person => {
-              const mother = peopleList.find(p => p.name === person.motherName);
-              const father = peopleList.find(p => p.name === person.fatherName);
+            {visiblePeoples.map(person => {
+              const mother = visiblePeoples.find(
+                p => p.name === person.motherName,
+              );
+              const father = visiblePeoples.find(
+                p => p.name === person.fatherName,
+              );
 
               return (
                 <tr

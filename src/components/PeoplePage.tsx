@@ -1,14 +1,78 @@
 import { PeopleFilters } from './PeopleFilters';
 import { Loader } from './Loader';
 import { PeopleTable } from './PeopleTable';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Person } from '../types';
 import { getPeople } from '../api';
+import { useSearchParams } from 'react-router-dom';
 
 export const PeoplePage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [peopleList, setPeopleList] = useState<Person[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+
+  const sex = searchParams.get('sex');
+  const query = searchParams.get('query') || '';
+  const centuries = searchParams.getAll('centuries');
+  const sort = searchParams.get('sort');
+  const order = searchParams.get('order');
+
+  // console.log(centuries)
+
+  const visiblePeoples = useMemo(() => {
+    let filtredPeoples = [...peopleList];
+
+    if (query) {
+      const lowerQuery = query.toLowerCase();
+
+      filtredPeoples = filtredPeoples.filter(
+        person =>
+          person.name.toLowerCase().includes(lowerQuery) ||
+          person.motherName?.toLowerCase().includes(lowerQuery) ||
+          person.fatherName?.toLowerCase().includes(lowerQuery),
+      );
+    }
+
+    if (sex) {
+      filtredPeoples = filtredPeoples.filter(person => person.sex === sex);
+    }
+
+    if (centuries.length !== 0) {
+      filtredPeoples = filtredPeoples.filter(person =>
+        centuries.includes(Math.ceil(person.born / 100).toString()),
+      );
+    }
+
+    if (sort) {
+      filtredPeoples.sort((a, b) => {
+        let aValue = a[sort as keyof Person];
+        let bValue = b[sort as keyof Person];
+
+        if (aValue === null || aValue === undefined) {
+          aValue = '';
+        }
+
+        if (bValue === null || bValue === undefined) {
+          bValue = '';
+        }
+
+        if (aValue < bValue) {
+          return order === 'desc' ? 1 : -1;
+        }
+
+        if (aValue > bValue) {
+          return order === 'desc' ? -1 : 1;
+        }
+
+        return 0;
+      });
+    }
+
+    return filtredPeoples;
+  }, [query, peopleList, sex, centuries, sort, order]);
+
+  // console.log(sex, query, centuries, sort, oder);
 
   useEffect(() => {
     setIsLoading(true);
@@ -54,7 +118,7 @@ export const PeoplePage = () => {
 
                     {/* <p>There are no people matching the current search criteria</p> */}
 
-                    <PeopleTable peopleList={peopleList} />
+                    <PeopleTable visiblePeoples={visiblePeoples} />
                   </div>
                 </div>
               </>

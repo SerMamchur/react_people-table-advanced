@@ -25,9 +25,6 @@ export const App = () => {
   );
 };
 
-
-
-
 // const [searchParams, setSearchParams] = useSearchParams();
 // const letters = searchParams.getAll('letters') || [];
 
