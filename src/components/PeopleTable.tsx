@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Person } from '../types';
 import { PersonLink } from './PersonLink';
 
@@ -9,6 +9,24 @@ type Props = {
 
 export const PeopleTable: React.FC<Props> = ({ visiblePeoples }) => {
   const { slug } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sort = searchParams.get('sort');
+  const order = searchParams.get('order');
+
+  const handleSort = (key: keyof Person) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    if (sort !== key) {
+      newParams.set('sort', key);
+    } else if (order !== 'desc') {
+      newParams.set('order', 'desc');
+    } else {
+      newParams.delete('order');
+      newParams.delete('sort');
+    }
+
+    setSearchParams(newParams);
+  };
 
   return (
     <>
@@ -22,7 +40,7 @@ export const PeopleTable: React.FC<Props> = ({ visiblePeoples }) => {
               <th>
                 <span className="is-flex is-flex-wrap-nowrap">
                   Name
-                  <a href="#/people?sort=name">
+                  <a onClick={() => handleSort('name')}>
                     <span className="icon">
                       <i className="fas fa-sort" />
                     </span>
@@ -33,7 +51,7 @@ export const PeopleTable: React.FC<Props> = ({ visiblePeoples }) => {
               <th>
                 <span className="is-flex is-flex-wrap-nowrap">
                   Sex
-                  <a href="#/people?sort=sex">
+                  <a onClick={() => handleSort('sex')}>
                     <span className="icon">
                       <i className="fas fa-sort" />
                     </span>
@@ -44,7 +62,7 @@ export const PeopleTable: React.FC<Props> = ({ visiblePeoples }) => {
               <th>
                 <span className="is-flex is-flex-wrap-nowrap">
                   Born
-                  <a href="#/people?sort=born&amp;order=desc">
+                  <a onClick={() => handleSort('born')}>
                     <span className="icon">
                       <i className="fas fa-sort-up" />
                     </span>
@@ -55,7 +73,7 @@ export const PeopleTable: React.FC<Props> = ({ visiblePeoples }) => {
               <th>
                 <span className="is-flex is-flex-wrap-nowrap">
                   Died
-                  <a href="#/people?sort=died">
+                  <a onClick={() => handleSort('died')}>
                     <span className="icon">
                       <i className="fas fa-sort" />
                     </span>

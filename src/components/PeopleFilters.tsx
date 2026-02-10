@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import classNames from 'classnames';
-import React from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getSearchWith } from '../utils/searchHelper';
 
@@ -7,7 +8,12 @@ import { getSearchWith } from '../utils/searchHelper';
 
 export const PeopleFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [inputValue, setInputValue] = useState<string>('');
   const centuries = searchParams.getAll('centuries') || [];
+
+  function reset() {
+    setInputValue('');
+  }
 
   function setSearchWith(param: any) {
     const result = getSearchWith(searchParams, param);
@@ -19,6 +25,7 @@ export const PeopleFilters = () => {
     const val = event.target.value.trimStart().trim();
     const result = val === '' ? { query: null } : { query: val };
 
+    setInputValue(val);
     setSearchWith(result);
   }
 
@@ -36,13 +43,6 @@ export const PeopleFilters = () => {
     setSearchWith({ centuries: newCenturies });
   }
 
-  // function deleteCenturies() {
-  //   const params = new URLSearchParams(searchParams);
-
-  //   params.delete('centuries');
-  //   setSearchParams(params);
-  // }
-
   return (
     <nav className="panel">
       <p className="panel-heading">Filters</p>
@@ -50,7 +50,6 @@ export const PeopleFilters = () => {
       <p className="panel-tabs" data-cy="SexFilter">
         {['All', 'Male', 'Female'].map(option => {
           const short = option === 'All' ? '' : option[0].toLowerCase();
-          // const href = short ? `#/people/sex=${short}` : '#/people';
 
           return (
             <a key={option} className="" onClick={() => sexFiller(short)}>
@@ -65,6 +64,7 @@ export const PeopleFilters = () => {
           <input
             data-cy="NameFilter"
             type="search"
+            value={inputValue}
             className="input"
             placeholder="Search"
             onChange={handelQueryChange}
@@ -91,7 +91,6 @@ export const PeopleFilters = () => {
                   onClick={e => {
                     e.preventDefault();
                     toogCenturies(number);
-                    // deleteCenturies();
                   }}
                 >
                   {number}
@@ -105,6 +104,7 @@ export const PeopleFilters = () => {
               data-cy="centuryALL"
               className="button is-success is-outlined"
               href="#/people"
+              onClick={reset}
             >
               All
             </a>
@@ -113,7 +113,11 @@ export const PeopleFilters = () => {
       </div>
 
       <div className="panel-block">
-        <a className="button is-link is-outlined is-fullwidth" href="#/people">
+        <a
+          className="button is-link is-outlined is-fullwidth"
+          href="#/people"
+          onClick={reset}
+        >
           Reset all filters
         </a>
       </div>
