@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import classNames from 'classnames';
 import React, { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { getSearchWith } from '../utils/searchHelper';
-
-// type Record = 'string' | 'string'[] | null | number;
 
 export const PeopleFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,13 +33,13 @@ export const PeopleFilters = () => {
     setSearchWith(result);
   }
 
-  function toogCenturies(ch: string) {
-    const newCenturies = centuries.includes(ch)
-      ? centuries.filter(century => century !== ch)
-      : [...centuries, ch];
+  // function toogCenturies(ch: string) {
+  //   const newCenturies = centuries.includes(ch)
+  //     ? centuries.filter(century => century !== ch)
+  //     : [...centuries, ch];
 
-    setSearchWith({ centuries: newCenturies });
-  }
+  //   setSearchWith({ centuries: newCenturies });
+  // }
 
   return (
     <nav className="panel">
@@ -81,20 +79,22 @@ export const PeopleFilters = () => {
           <div className="level-left">
             {['16', '17', '18', '19', '20'].map(number => {
               return (
-                <a
+                <Link
                   key={number}
                   data-cy="century"
                   className={classNames('button mr-1', {
                     'is-info': centuries.includes(number.toString()),
                   })}
-                  href={`#/people?centuries=${number}`}
-                  onClick={e => {
-                    e.preventDefault();
-                    toogCenturies(number);
+                  to={{
+                    search: getSearchWith(searchParams, {
+                      centuries: centuries.includes(number)
+                        ? centuries.filter(century => century !== number)
+                        : [...centuries, number],
+                    }),
                   }}
                 >
                   {number}
-                </a>
+                </Link>
               );
             })}
           </div>

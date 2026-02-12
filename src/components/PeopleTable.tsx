@@ -1,15 +1,18 @@
-import { useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Person } from '../types';
 import { PersonLink } from './PersonLink';
+import classNames from 'classnames';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 type Props = {
   visiblePeoples: Person[];
 };
 
+const SORT_FIELD: Array<keyof Person> = ['name', 'sex', 'born', 'died'];
+
 export const PeopleTable: React.FC<Props> = ({ visiblePeoples }) => {
   const { slug } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const sort = searchParams.get('sort');
   const order = searchParams.get('order');
 
@@ -25,7 +28,9 @@ export const PeopleTable: React.FC<Props> = ({ visiblePeoples }) => {
       newParams.delete('sort');
     }
 
-    setSearchParams(newParams);
+    const query = newParams.toString();
+
+    return query ? `?${query}` : '';
   };
 
   return (
@@ -37,49 +42,26 @@ export const PeopleTable: React.FC<Props> = ({ visiblePeoples }) => {
         >
           <thead>
             <tr>
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  Name
-                  <a onClick={() => handleSort('name')}>
-                    <span className="icon">
-                      <i className="fas fa-sort" />
+              {SORT_FIELD.map(name => {
+                return (
+                  <th key={name}>
+                    <span className="is-flex is-flex-wrap-nowrap">
+                      {name[0].toUpperCase() + name.slice(1)}
+                      <Link to={handleSort(name)}>
+                        <span className="icon">
+                          <i
+                            className={classNames('fas', {
+                              'fa-sort': sort !== name,
+                              'fa-sort-up': sort === name && order !== 'desc',
+                              'fa-sort-down': sort === name && order === 'desc',
+                            })}
+                          />
+                        </span>
+                      </Link>
                     </span>
-                  </a>
-                </span>
-              </th>
-
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  Sex
-                  <a onClick={() => handleSort('sex')}>
-                    <span className="icon">
-                      <i className="fas fa-sort" />
-                    </span>
-                  </a>
-                </span>
-              </th>
-
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  Born
-                  <a onClick={() => handleSort('born')}>
-                    <span className="icon">
-                      <i className="fas fa-sort-up" />
-                    </span>
-                  </a>
-                </span>
-              </th>
-
-              <th>
-                <span className="is-flex is-flex-wrap-nowrap">
-                  Died
-                  <a onClick={() => handleSort('died')}>
-                    <span className="icon">
-                      <i className="fas fa-sort" />
-                    </span>
-                  </a>
-                </span>
-              </th>
+                  </th>
+                );
+              })}
 
               <th>Mother</th>
               <th>Father</th>
