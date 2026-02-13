@@ -24,19 +24,3 @@ export const App = () => {
     </div>
   );
 };
-
-// const [searchParams, setSearchParams] = useSearchParams();
-// const letters = searchParams.getAll('letters') || [];
-
-// function toogLetters(ch) {
-//   const params = new URLSearchParams(searchParams);
-//   const newLetter = letters.includes(ch)
-//     ? letters.filter(letter => letter !== ch)
-//     : [...letters, ch];
-
-//   params.delete('letters');
-//   newLetter.forEach(letter => {
-//     params.append('letters', letter);
-//   });
-//   setSearchParams(params);
-// }

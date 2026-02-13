@@ -33,14 +33,6 @@ export const PeopleFilters = () => {
     setSearchWith(result);
   }
 
-  // function toogCenturies(ch: string) {
-  //   const newCenturies = centuries.includes(ch)
-  //     ? centuries.filter(century => century !== ch)
-  //     : [...centuries, ch];
-
-  //   setSearchWith({ centuries: newCenturies });
-  // }
-
   return (
     <nav className="panel">
       <p className="panel-heading">Filters</p>
